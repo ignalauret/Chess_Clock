@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreference
+        android:title="Symmetric"
+        android:summary="The players start with the same time"
+        android:defaultValue="true"
+        android:key="same_time" />
+
+    <!-- Symmetric time Category -->
+    <PreferenceCategory
+        android:title="Time"
+        android:key="standard_time_category">
+
+        <ListPreference
+            android:key="standard_game_mode"
+            android:title="Game Mode"
+            android:summary="Choose a Mode"
+            android:entries="@array/GameMode"
+            android:entryValues="@array/GameModeValue"/>
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="standard_starting_time"
+            android:title="Starting Time"
+            android:summary="Select the starting time for the players"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="standard_increment"
+            android:title="Increment"
+            android:summary="The remaining time adds up after each move"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="standard_time_control"
+            android:title="Time Control"
+            android:summary="Increment starts at move"
+            android:defaultValue="0" />
+
+    </PreferenceCategory>
+
+    <!-- White Time setting if times aren't symmetric -->
+    <PreferenceCategory
+        android:title="Time for White"
+        android:key="white_time_category"
+        app:isPreferenceVisible="false">
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="white_starting_time"
+            android:title="Starting Time"
+            android:summary="Select the starting time for the white player"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="white_increment"
+            android:title="Increment"
+            android:summary="Whites remaining time adds up after each move"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="white_time_control"
+            android:title="Time Control"
+            android:summary="Whites increment starts at move"
+            android:defaultValue="0" />
+
+    </PreferenceCategory>
+
+    <!-- Black Time setting if times aren't symmetric -->
+    <PreferenceCategory
+        android:title="Time for Black"
+        android:key="black_time_category"
+        app:isPreferenceVisible="false">
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="black_starting_time"
+            android:title="Starting Time"
+            android:summary="Select the starting time for the black player"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="black_increment"
+            android:title="Increment"
+            android:summary="Blacks remaining time adds up after each move"
+            android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="black_time_control"
+            android:title="Time Control"
+            android:summary="Blacks increment starts at move"
+            android:defaultValue="0" />
+
+    </PreferenceCategory>
+
+    <!-- View Preferences (TODO) -->
+    <PreferenceCategory
+        android:title="View">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="nosirve"
+            android:summary="Para ver como se veia la segunda categoria"
+            android:title="No hace nada" />
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

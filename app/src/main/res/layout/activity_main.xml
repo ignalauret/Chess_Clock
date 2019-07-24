@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#C0C0C0"
+    tools:context=".MainActivity">
+
+
+    <Button
+        android:id="@+id/TimeBtn1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="timePlayer1"
+        android:textSize="70sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/RestartBtn"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/TimeBtn2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="timePlayer2"
+        android:rotation="180"
+        android:textSize="70sp"
+        app:layout_constraintBottom_toTopOf="@+id/RestartBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/PlayPauseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="startStop"
+        app:layout_constraintBottom_toBottomOf="@+id/RestartBtn"
+        app:layout_constraintEnd_toStartOf="@+id/StatsBtn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/RestartBtn"
+        app:layout_constraintTop_toTopOf="@+id/RestartBtn"
+        app:srcCompat="@drawable/ic_my_play_icon" />
+
+    <ImageButton
+        android:id="@+id/RestartBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="restart"
+        app:layout_constraintBottom_toBottomOf="@+id/SettingsBtn"
+        app:layout_constraintEnd_toStartOf="@+id/PlayPauseBtn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/SettingsBtn"
+        app:layout_constraintTop_toTopOf="@+id/SettingsBtn"
+        app:srcCompat="@drawable/ic_my_restart_icon" />
+
+    <ImageButton
+        android:id="@+id/SettingsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:onClick="goToSettings"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/RestartBtn"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_my_settings_icon" />
+
+    <ImageButton
+        android:id="@+id/StatsBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToSpeechRecognition"
+        app:layout_constraintBottom_toBottomOf="@+id/PlayPauseBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/PlayPauseBtn"
+        app:layout_constraintTop_toTopOf="@+id/PlayPauseBtn"
+        app:srcCompat="@drawable/ic_my_stats_icon" />
+
+</android.support.constraint.ConstraintLayout>

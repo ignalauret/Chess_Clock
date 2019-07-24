@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="GameMode">
+        <item>Blitz 3min</item>
+        <item>Blitz 1min</item>
+        <item>Custom</item>
+    </string-array>
+
+    <string-array name="GameModeValue">
+        <item>blitz_3min</item>
+        <item>blitz_1min</item>
+        <item>custom</item>
+    </string-array>
+</resources>
