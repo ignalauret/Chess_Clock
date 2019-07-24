@@ -21,7 +21,7 @@
             android:entries="@array/GameMode"
             android:entryValues="@array/GameModeValue"/>
 
-        <com.example.chessclock.NumberPickerPreference
+        <com.example.chessclock.DoubleNumberPickerPreference
             android:key="standard_starting_time"
             android:title="Starting Time"
             android:summary="Select the starting time for the players"

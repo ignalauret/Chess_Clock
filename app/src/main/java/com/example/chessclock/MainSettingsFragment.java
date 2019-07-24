@@ -39,11 +39,21 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         DialogFragment dialogFragment = null;
         /* Binding the NumberPickers on dialog creation */
         if (preference instanceof NumberPickerPreference) {
+
             dialogFragment = new NumberPickerPreferenceCompat();
             Bundle bundle = new Bundle(1);
             bundle.putString("key", preference.getKey());
             dialogFragment.setArguments(bundle);
+
+        } else if(preference instanceof DoubleNumberPickerPreference) {
+
+            dialogFragment = new DoubleNumberPickerPreferenceCompat();
+            Bundle bundle = new Bundle(1);
+            bundle.putString("key", preference.getKey());
+            dialogFragment.setArguments(bundle);
+
         }
+
         /* Show dialog on the fragment */
         if (dialogFragment != null) {
             dialogFragment.setTargetFragment(this, 0);

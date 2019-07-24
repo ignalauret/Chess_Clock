@@ -10,23 +10,24 @@ import android.widget.NumberPicker;
 
 public class NumberPickerPreferenceCompat extends PreferenceDialogFragmentCompat implements DialogPreference.TargetFragment
 {
-    NumberPicker numberPicker;
+    NumberPicker mNumberPicker;
+
 
     @Override
     protected View onCreateDialogView(Context context)
     {
-        numberPicker = new NumberPicker(context);
-        return (numberPicker);
+        mNumberPicker = new NumberPicker(context);
+        return (mNumberPicker);
     }
 
     @Override
     protected void onBindDialogView(View v)
     {
         super.onBindDialogView(v);
-        numberPicker.setMinValue(1);
-        numberPicker.setMaxValue(7);
+        mNumberPicker.setMinValue(0);
+        mNumberPicker.setMaxValue(60);
         NumberPickerPreference pref = (NumberPickerPreference) getPreference();
-        numberPicker.setValue(pref.time);
+        mNumberPicker.setValue(pref.time);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class NumberPickerPreferenceCompat extends PreferenceDialogFragmentCompat
         if (positiveResult)
         {
             NumberPickerPreference pref = (NumberPickerPreference) getPreference();
-            pref.time = numberPicker.getValue();
+            pref.time = mNumberPicker.getValue();
 
             String value = "" + pref.time;
             pref.persistStringValue(value);

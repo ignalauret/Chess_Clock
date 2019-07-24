@@ -11,7 +11,7 @@ public class NumberPickerPreference extends DialogPreference
     /* Value */
     int time;
 
-    /** Contructor */
+    /** Constructor */
     public NumberPickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
