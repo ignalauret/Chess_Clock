@@ -110,12 +110,15 @@ public class MainActivity extends AppCompatActivity {
 
                 mGameMode = gameMode;
 
-                long mStartingTime = Long.parseLong(sharedPref.getString(STANDARD_STARTING_TIME_KEY,
-                        "3")) *1000;
+                String mStartingTimeString = sharedPref.getString(STANDARD_STARTING_TIME_KEY,
+                        "3");
                 long mIncrement = Long.parseLong(sharedPref.getString(STANDARD_INCREMENT_KEY,
                         "0")) *1000;
                 int mTimeControl = Integer.parseInt(sharedPref.getString(STANDARD_TIME_CONTROL_KEY,
                         "0"));
+
+                String[] splattedTime = mStartingTimeString.split(":");
+                long mStartingTime = Long.parseLong(splattedTime[0])*60000 + Long.parseLong(splattedTime[1]) * 1000;
 
                 if(mStartTimeP1 != mStartingTime){
                     mStartTimeP1 = mStartingTime;

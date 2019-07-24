@@ -25,7 +25,7 @@
             android:key="standard_starting_time"
             android:title="Starting Time"
             android:summary="Select the starting time for the players"
-            android:defaultValue="2" />
+            android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="standard_increment"
