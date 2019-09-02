@@ -30,7 +30,6 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.user_preferences, s);
         bindPreferences(findPreference(SAME_TIME_KEY));
         bindPreferences(findPreference(STANDARD_GAME_MODE_KEY));
-
     }
 
 
@@ -143,7 +142,12 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
             case "":
                 /* Called with this argument on preference resume */
                 ListPreference mList = (ListPreference) findPreference(STANDARD_GAME_MODE_KEY);
-                checkGameMode(mList.getValue());
+                if(mList.getValue() != null) {
+                    checkGameMode(mList.getValue());
+                } else {
+                    showTimeDisplays(true);
+                }
+
                 break;
             case "custom":
                 showTimeDisplays(true);

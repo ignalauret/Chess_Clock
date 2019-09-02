@@ -3,6 +3,7 @@ package com.example.chessclock;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,27 +11,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 
 import java.util.Locale;
+import java.util.Objects;
 
-import static com.example.chessclock.Constants.ACTIVE_PLAYER_LOW_COLOR;
-import static com.example.chessclock.Constants.ACTIVE_PLAYER_COLOR;
-import static com.example.chessclock.Constants.BLACK_COLOR;
-import static com.example.chessclock.Constants.BLACK_INCREMENT_KEY;
-import static com.example.chessclock.Constants.BLACK_STARTING_TIME_KEY;
-import static com.example.chessclock.Constants.BLACK_TIME_CONTROL_KEY;
-import static com.example.chessclock.Constants.DEFAULT_STARTING_TIME;
-import static com.example.chessclock.Constants.IDLE_PLAYER_COLOR;
-import static com.example.chessclock.Constants.PAUSE_ICON;
-import static com.example.chessclock.Constants.PLAY_ICON;
-import static com.example.chessclock.Constants.SAME_TIME_KEY;
-import static com.example.chessclock.Constants.STANDARD_GAME_MODE_KEY;
-import static com.example.chessclock.Constants.STANDARD_INCREMENT_KEY;
-import static com.example.chessclock.Constants.STANDARD_STARTING_TIME_KEY;
-import static com.example.chessclock.Constants.STANDARD_TIME_CONTROL_KEY;
-import static com.example.chessclock.Constants.TICK_TIME;
-import static com.example.chessclock.Constants.WHITE_COLOR;
-import static com.example.chessclock.Constants.WHITE_INCREMENT_KEY;
-import static com.example.chessclock.Constants.WHITE_STARTING_TIME_KEY;
-import static com.example.chessclock.Constants.WHITE_TIME_CONTROL_KEY;
+import static com.example.chessclock.Constants.*;
 
 public class MainActivity extends AppCompatActivity {
     
@@ -39,17 +22,12 @@ public class MainActivity extends AppCompatActivity {
     Button mPlayer1Btn;
     Button mPlayer2Btn;
     ImageButton mStartStopBtn;
+    ImageButton mRestartBtn;
 
     /* Time Variables */
-    public long mStartTimeP1 = DEFAULT_STARTING_TIME;
-    public long mStartTimeP2 = DEFAULT_STARTING_TIME;
-    public long mIncrementP1;
-    public long mIncrementP2;
     private long mTimeRemainingP1;
     private long mTimeRemainingP2;
-    public int mTimeControlP1;
-    public int mTimeControlP2;
-    private String mGameMode;
+    private GameMode mCurrentGameMode;
 
     /* Script Tools */
     private CountDownTimer mCountDownTimer;
@@ -58,10 +36,9 @@ public class MainActivity extends AppCompatActivity {
     /* Flags */
     private boolean mTurnP1;
     private boolean mGamePaused;
-    private boolean mSymetric;
 
 
-    /* ============================== Layout & Activities ============================== */
+    /* ============================== Activities ============================== */
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,156 +48,160 @@ public class MainActivity extends AppCompatActivity {
         android.support.v7.preference.PreferenceManager
                 .setDefaultValues(this, R.xml.user_preferences, false);
 
-
-        mPlayer1Btn = findViewById(R.id.TimeBtn1);
-        mPlayer2Btn = findViewById(R.id.TimeBtn2);
-        mStartStopBtn = findViewById(R.id.PlayPauseBtn);
-
+        initializeLayout();
         getPreferences();
         initialize();
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
-
         getPreferences();
-
     }
 
-    /** Update the values that can be changed by the client from Settings */
-    private void getPreferences(){
-        boolean restartFlag = false;
 
+    /**
+     * Gets the preference info and stores it into our current game mode object. Checks if it has
+     * been changes and restarts the clocks if it has.
+     */
+    private void getPreferences(){
+        if(mCurrentGameMode == null)
+            mCurrentGameMode = new GameMode("default",true,1,0,0,0,0,0);
+        boolean restartFlag = false;
         SharedPreferences sharedPref = android.support.v7.preference.PreferenceManager
                         .getDefaultSharedPreferences(this);
 
+        /* Check symmetric time or not */
         Boolean sameTime = sharedPref.getBoolean(SAME_TIME_KEY,false);
-
-        if(mSymetric != sameTime){
-            mSymetric = sameTime;
+        if(mCurrentGameMode.symmetric != sameTime){
+            mCurrentGameMode.symmetric = sameTime;
             restartFlag = true;
         }
-
+        /* If symmetric has been selected, then the times for each player are the same. */
         if(sameTime){
-
             String gameMode = sharedPref.getString(STANDARD_GAME_MODE_KEY,"blitz_3min");
-
+            /* If the game mode is custom, we check the prefs */
+            assert gameMode != null;
             if(gameMode.equals("custom")){
-
-                mGameMode = gameMode;
-
+                mCurrentGameMode.name = gameMode;
+                /* Get pref values using requireNonNull just in case */
                 String mStartingTimeString = sharedPref.getString(STANDARD_STARTING_TIME_KEY,
                         "3");
-                long mIncrement = Long.parseLong(sharedPref.getString(STANDARD_INCREMENT_KEY,
-                        "0")) *1000;
-                int mTimeControl = Integer.parseInt(sharedPref.getString(STANDARD_TIME_CONTROL_KEY,
-                        "0"));
-
+                long mIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
+                        STANDARD_INCREMENT_KEY, "1"))) *1000;
+                int mTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
+                        STANDARD_TIME_CONTROL_KEY,                        "0")));
+                /* Parse the time from min and secs into millis */
+                assert mStartingTimeString != null;
                 String[] splattedTime = mStartingTimeString.split(":");
-                long mStartingTime = Long.parseLong(splattedTime[0])*60000 + Long.parseLong(splattedTime[1]) * 1000;
-
-                if(mStartTimeP1 != mStartingTime){
-                    mStartTimeP1 = mStartingTime;
-                    mStartTimeP2 = mStartingTime;
+                long mStartingTime = Long.parseLong(splattedTime[0]) * 60000 +
+                                             Long.parseLong(splattedTime[1]) * 1000;
+                /* Apply changes, if anyone changes restarts the clocks */
+                if(mCurrentGameMode.startTimeP1 != mStartingTime){
+                    mCurrentGameMode.startTimeP1 = mStartingTime;
+                    mCurrentGameMode.startTimeP2 = mStartingTime;
                     restartFlag = true;
                 }
-
-                if(mIncrementP1 != mIncrement){
-                    mIncrementP1 = mIncrement;
-                    mIncrementP2 = mIncrement;
+                if(mCurrentGameMode.incrementP1 != mIncrement){
+                    mCurrentGameMode.incrementP1 = mIncrement;
+                    mCurrentGameMode.incrementP2 = mIncrement;
                     restartFlag = true;
                 }
-
-                if(mTimeControlP1 != mTimeControl){
-                    mTimeControlP1 = mTimeControl;
-                    mTimeControlP2 = mTimeControl;
+                if(mCurrentGameMode.timeControlP1 != mTimeControl){
+                    mCurrentGameMode.timeControlP1 = mTimeControl;
+                    mCurrentGameMode.timeControlP2 = mTimeControl;
                     restartFlag = true;
                 }
-
+            /* If it isn't custom, we set the game settings to the selected game mode */
             } else {
-                if(mGameMode != gameMode){
-                    mGameMode = gameMode;
+                if(!mCurrentGameMode.name.equals(gameMode)){
+                    mCurrentGameMode.name = gameMode;
                     setGameMode(gameMode);
                     restartFlag = true;
                 }
             }
-
-
+        /* If it isn't symmetric, the values for each player must be checked */
         } else {
-
-            long mWhiteStartingTime = Long.parseLong(sharedPref.getString(WHITE_STARTING_TIME_KEY,
-                    "3")) * 1000;
-            long mWhiteIncrement = Long.parseLong(sharedPref.getString(WHITE_INCREMENT_KEY,
-                    "0")) * 1000;
-            int mWhiteTimeControl = Integer.parseInt(sharedPref.getString(WHITE_TIME_CONTROL_KEY,
-                    "0"));
-            long mBlackStartingTime = Long.parseLong(sharedPref.getString(BLACK_STARTING_TIME_KEY,
-                    "3")) * 1000;
-            long mBlackIncrement = Long.parseLong(sharedPref.getString(BLACK_INCREMENT_KEY,
-                    "0")) * 1000;
-            int mBlackTimeControl = Integer.parseInt(sharedPref.getString(BLACK_TIME_CONTROL_KEY,
-                    "0"));
-
-            if(mStartTimeP1 != mWhiteStartingTime){
-                mStartTimeP1 = mWhiteStartingTime;
+            /* Get pref values using requireNonNull just in case */
+            String mWhiteStartingTimeString = sharedPref.getString(WHITE_STARTING_TIME_KEY,
+                    "3:0");
+            long mWhiteIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
+                    WHITE_INCREMENT_KEY, "0"))) * 1000;
+            int mWhiteTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
+                    WHITE_TIME_CONTROL_KEY,"0")));
+            String mBlackStartingTimeString = sharedPref.getString(
+                    BLACK_STARTING_TIME_KEY, "3:0");
+            long mBlackIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
+                    BLACK_INCREMENT_KEY, "0"))) * 1000;
+            int mBlackTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
+                    BLACK_TIME_CONTROL_KEY, "0")));
+            /* Parse the time from min and secs into millis */
+            assert mWhiteStartingTimeString != null;
+            String[] splattedWhiteTime = mWhiteStartingTimeString.split(":");
+            long mWhiteStartingTime = Long.parseLong(splattedWhiteTime[0])*60000 +
+                                              Long.parseLong(splattedWhiteTime[1]) * 1000;
+            assert mBlackStartingTimeString != null;
+            String[] splattedBlackTime = mBlackStartingTimeString.split(":");
+            long mBlackStartingTime = Long.parseLong(splattedBlackTime[0])*60000 +
+                                              Long.parseLong(splattedBlackTime[1]) * 1000;
+            /* Apply changes, if anyone changes restarts the clocks */
+            if(mCurrentGameMode.startTimeP1 != mWhiteStartingTime){
+                mCurrentGameMode.startTimeP1 = mWhiteStartingTime;
                 restartFlag = true;
             }
-
-            if(mTimeControlP1 != mWhiteTimeControl){
-                mTimeControlP1 = mWhiteTimeControl;
+            if(mCurrentGameMode.timeControlP1 != mWhiteTimeControl){
+                mCurrentGameMode.timeControlP1 = mWhiteTimeControl;
                 restartFlag = true;
             }
-
-            if(mIncrementP1 != mWhiteIncrement){
-                mIncrementP1 = mWhiteIncrement;
+            if(mCurrentGameMode.incrementP1 != mWhiteIncrement){
+                mCurrentGameMode.incrementP1 = mWhiteIncrement;
                 restartFlag = true;
             }
-
-            if(mStartTimeP2 != mBlackStartingTime){
-                mStartTimeP2 = mBlackStartingTime;
+            if(mCurrentGameMode.startTimeP2 != mBlackStartingTime){
+                mCurrentGameMode.startTimeP2 = mBlackStartingTime;
                 restartFlag = true;
             }
-
-            if(mTimeControlP2 != mBlackTimeControl){
-                mTimeControlP2 = mBlackTimeControl;
+            if(mCurrentGameMode.timeControlP2 != mBlackTimeControl){
+                mCurrentGameMode.timeControlP2 = mBlackTimeControl;
                 restartFlag = true;
             }
-
-            if(mIncrementP2 != mBlackIncrement){
-                mIncrementP2 = mBlackIncrement;
+            if(mCurrentGameMode.incrementP2 != mBlackIncrement){
+                mCurrentGameMode.incrementP2 = mBlackIncrement;
                 restartFlag = true;
             }
-
         }
-
-        if(restartFlag) restart(null);
+        if(restartFlag) restart();
     }
 
-    /** Go to Move recognition activity */
+
+    /**
+     * Go to Move recognition activity
+     */
     public void goToSpeechRecognition(View view) {
-
-        Intent intent = new Intent(this,SpeechRecognition.class);
+        Intent intent = new Intent(this, SpeechRecognition.class);
         startActivity(intent);
     }
 
 
-    /** Go to Settings recognition activity */
+    /**
+     * Go to Settings activity
+     */
     public void goToSettings(View view) {
-
-        Intent intent = new Intent(this,Settings.class);
+        Intent intent = new Intent(this, Settings.class);
         startActivity(intent);
     }
 
 
-    /** Start or pause time counting */
-    public void startStop(View view){
-
-        if(mGamePaused){
+    /**
+     * Start or pause time counting
+     */
+    public void startStop() {
+        if(mGamePaused) {
             if(mTurnP1) {
-                startTimer1();
+                startTimer(1);
             } else {
-                startTimer2();
+                startTimer(2);
             }
             mStartStopBtn.setImageResource(PAUSE_ICON);
             mGamePaused = false;
@@ -231,108 +212,115 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /** Stops time, sets flags and icons to "Game paused mode" */
-    private void stop(){
-
+    /**
+     * Stops time, sets flags and icons to "Game paused mode"
+     */
+    private void stop() {
         mStartStopBtn.setImageResource(PLAY_ICON);
         stopTimer();
         mGamePaused = true;
     }
 
 
-    /** Restart the match */
-    public void restart(View view){
-
+    /**
+     * Restart the match
+     */
+    public void restart() {
         stop();
         initialize();
     }
 
     /* ============================== Time Methods ============================== */
-    
-    /** Ends Player 1 turn and starts player 2. Sets timers, flags, changes colors and mIncrements
-     * P1 time if there's mIncrement.
+
+    /**
+     * Ends Player 1 turn and starts player 2. Sets timers, flags, changes colors and increments
+     * P1 time if there's increment.
      */
-    public void timePlayer1(View view){
-        if(mTurnP1 && !mGamePaused){
-            mIncrement(1);
+    public void endTurn(int player) {
+        if(player == 1) {
+            if(mTurnP1 && !mGamePaused) {
+                incrementTime(1);
 
-            mMovesCounter++;
+                mMovesCounter++;
 
-            /* Switch enabled time */
-            stopTimer();
-            startTimer2();
+                /* Switch enabled time */
+                stopTimer();
+                startTimer(2);
 
-            /* Switch turns */
-            mTurnP1 = false;
+                /* Switch turns */
+                mTurnP1 = false;
+            }
+        } else {
+            if(!mTurnP1 && !mGamePaused) {
+                incrementTime(2);
+
+                mMovesCounter++;
+
+                /* Switch enabled time */
+                stopTimer();
+                startTimer(1);
+
+                /* Initialize times */
+                mTurnP1 = true;
+            }
+        }
+
+    }
+
+
+    /**
+     * Start Player 1 clock
+     */
+    private void startTimer(int player) {
+        if(player == 1) {
+            mCountDownTimer = new CountDownTimer(mTimeRemainingP1,TICK_TIME) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                    mTimeRemainingP1 = millisUntilFinished;
+                    updateClock(1,mTimeRemainingP1);
+
+                }
+
+                @Override
+                public void onFinish() {
+                    gameOver(1);
+                }
+
+            }.start();
+        } else {
+            mCountDownTimer = new CountDownTimer(mTimeRemainingP2,TICK_TIME) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+
+                    mTimeRemainingP2 = millisUntilFinished;
+                    updateClock(2,mTimeRemainingP2);
+
+                }
+
+                @Override
+                public void onFinish() {
+                    gameOver(2);
+                }
+
+            }.start();
         }
     }
 
 
-    /** Ends Player 2 turn and starts player 1. Sets timers, flags, changes colors and mIncrements
-     * P2 time if there's mIncrement.
+    /**
+     * Stop the Countdown Timer that's currently executing.
      */
-    public void timePlayer2(View view){
-        if(!mTurnP1 && !mGamePaused){
-            mIncrement(2);
-
-            mMovesCounter++;
-
-            /* Switch enabled time */
-            stopTimer();
-            startTimer1();
-
-            /* Initialize times */
-            mTurnP1 = true;
-        }
-    }
-
-
-    /** Start Player 1 clock */
-    private void startTimer1(){
-        mCountDownTimer = new CountDownTimer(mTimeRemainingP1,TICK_TIME) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-                mTimeRemainingP1 = millisUntilFinished;
-                updateClock(1,mTimeRemainingP1);
-
-            }
-
-            @Override
-            public void onFinish() {
-                gameOver(1);
-            }
-
-        }.start();
-    }
-
-    /** Start Player 2 clock */
-    private void startTimer2(){
-        mCountDownTimer = new CountDownTimer(mTimeRemainingP2,TICK_TIME) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-                mTimeRemainingP2 = millisUntilFinished;
-                updateClock(2,mTimeRemainingP2);
-
-            }
-
-            @Override
-            public void onFinish() {
-                gameOver(2);
-            }
-
-        }.start();
-    }
-
-
-    /** Stop time counting */
     private void stopTimer(){
         if(mCountDownTimer != null) mCountDownTimer.cancel();
     }
 
-    /** Update text on the $player to the $time */
-    private void updateClock(int player, long time){
+    /**
+     * Sets the UI of the clock to the actual time remaining for the player.
+     * @param player the players clock to modify.
+     * @param time the remaining time for that player.
+     */
+    private void updateClock(int player, long time) {
         /* Get time */
         int minutes = (int) time / 60000;
         int seconds = (int) (time / 1000) % 60;
@@ -340,19 +328,16 @@ public class MainActivity extends AppCompatActivity {
 
         if(player == 1){
             /* Update buttons text to actual time left */
-            if(minutes > 0){
-                
+            if(minutes > 0) {
                 String timeLeftFormatted = String.format(Locale.getDefault(),
                         "%02d:%02d",minutes,seconds);
                 mPlayer1Btn.setText(timeLeftFormatted);
             } else {
-                
                 String timeLeftFormatted = String.format(Locale.getDefault(),
                         "%01d.%01d",seconds,milliseconds);
                 mPlayer1Btn.setText(timeLeftFormatted);
-                
                 /* Check if a player is running out of time */
-                if(seconds < 20){ 
+                if(seconds < 20) {
                     mPlayer1Btn.setTextColor(ACTIVE_PLAYER_LOW_COLOR);
                 } else {
                     mPlayer1Btn.setTextColor(BLACK_COLOR);
@@ -360,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             /* Update buttons text to actual time left */
-            if(minutes > 0){
+            if(minutes > 0) {
                 String timeLeftFormatted = String.format(Locale.getDefault(),
                         "%02d:%02d",minutes,seconds);
                 mPlayer2Btn.setText(timeLeftFormatted);
@@ -369,7 +354,7 @@ public class MainActivity extends AppCompatActivity {
                         "%01d.%01d",seconds,milliseconds);
                 mPlayer2Btn.setText(timeLeftFormatted);
                 /* Check if a player is running out of time */
-                if(seconds < 20){
+                if(seconds < 20) {
                     mPlayer2Btn.setTextColor(ACTIVE_PLAYER_LOW_COLOR);
                 } else {
                     mPlayer2Btn.setTextColor(WHITE_COLOR);
@@ -378,48 +363,30 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    
-    /** Increments the time of $player by the actual mIncrement and updates both clocks. */
-    private void mIncrement(int player) {
-        if(player == 1 && mMovesCounter >= mTimeControlP1) {
 
-            mTimeRemainingP1 += mIncrementP1;
+    /**
+     * Increments the time of the player and calls the update clock function.
+     * @param player the player to increment and update.
+     */
+    private void incrementTime(int player) {
+        if(player == 1 && mMovesCounter >= mCurrentGameMode.timeControlP1) {
 
-        } else if (player == 2 && mMovesCounter >= mTimeControlP2) {
+            mTimeRemainingP1 += mCurrentGameMode.incrementP1;
+            updateClock(1,mTimeRemainingP1);
 
-            mTimeRemainingP2 += mIncrementP2;
+        } else if (player == 2 && mMovesCounter >= mCurrentGameMode.timeControlP2) {
+
+            mTimeRemainingP2 += mCurrentGameMode.incrementP2;
+            updateClock(2,mTimeRemainingP2);
 
         }
-        updateClock(1,mTimeRemainingP1);
-        updateClock(2,mTimeRemainingP2);
     }
 
-    private void setGameMode(String mode){
-        switch (mode){
-            case "blitz_3min":
-                mStartTimeP1 = 180000;
-                mStartTimeP2 = 180000;
-                mIncrementP1 = 2000;
-                mIncrementP2 = 2000;
-                mTimeControlP1 = 0;
-                mTimeControlP2 = 0;
-                break;
-            case "blitz_1min":
-                mStartTimeP1 = 60000;
-                mStartTimeP2 = 60000;
-                mIncrementP1 = 2000;
-                mIncrementP2 = 2000;
-                mTimeControlP1 = 0;
-                mTimeControlP2 = 0;
-                break;
-            default:
-                mStartTimeP1 = 0;
-                mStartTimeP2 = 0;
-                mIncrementP1 = 0;
-                mIncrementP2 = 0;
-                mTimeControlP1 = 0;
-                mTimeControlP2 = 0;
-                break;
+    private void setGameMode(String gameMode){
+        for (GameMode mode : gameModes) {
+            if(mode.name.equals(gameMode)) {
+                mCurrentGameMode = new GameMode(mode);
+            }
         }
     }
     
@@ -443,50 +410,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /** Initializes times and counters, updates layout and sets flags */
-    private void initialize(){
-
-        setBtnsColor(0);
-
-        mTimeRemainingP1 = mStartTimeP1;
-        mTimeRemainingP2 = mStartTimeP2;
-
-        updateClock(1,mStartTimeP1);
-        updateClock(2,mStartTimeP2);
-
+    /**
+     * Initializes times and counters, updates layout and sets flags
+     */
+    private void initialize() {
+        resetColors();
+        /* Init times for each player */
+        mTimeRemainingP1 = mCurrentGameMode.startTimeP1;
+        mTimeRemainingP2 = mCurrentGameMode.startTimeP2;
+        /* Update times on the UI */
+        updateClock(1,mCurrentGameMode.startTimeP1);
+        updateClock(2,mCurrentGameMode.startTimeP2);
+        /* Set flags */
         mTurnP1 = true;
         mGamePaused = true;
-
+        /* Reset counter */
         mMovesCounter = 0;
 
         mStartStopBtn.setEnabled(true);
     }
 
-    /* ============================== Layout Design ============================== */
+    /* ============================== Layout ============================== */
 
-
-    /** Set buttons background color.
-        0: Starting mode.
-        1: Player 1 turn.
-        2: Player 2 turn.
-    */
-    private void setBtnsColor(int mode){
-        switch (mode){
-            case 0 :
-                mPlayer1Btn.setBackgroundColor(WHITE_COLOR);
-                mPlayer2Btn.setBackgroundColor(BLACK_COLOR);
-                mPlayer2Btn.setTextColor(WHITE_COLOR);
-                break;
-            case 1 :
-                mPlayer1Btn.setBackgroundColor(ACTIVE_PLAYER_COLOR);
-                mPlayer2Btn.setBackgroundColor(IDLE_PLAYER_COLOR);
-                break;
-            case 2 :
-                mPlayer2Btn.setBackgroundColor(ACTIVE_PLAYER_COLOR);
-                mPlayer1Btn.setBackgroundColor(IDLE_PLAYER_COLOR);
-                break;
-
-        }
+    private void initializeLayout() {
+        mPlayer1Btn = findViewById(R.id.TimeBtn1);
+        mPlayer2Btn = findViewById(R.id.TimeBtn2);
+        mStartStopBtn = findViewById(R.id.PlayPauseBtn);
+        mRestartBtn = findViewById(R.id.RestartBtn);
+        mPlayer1Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endTurn(1);
+            }
+        });
+        mPlayer2Btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                endTurn(2);
+            }
+        });
+        mStartStopBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startStop();
+            }
+        });
+        mRestartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                restart();
+            }
+        });
     }
 
+
+    private void resetColors(){
+        mPlayer1Btn.setBackgroundColor(WHITE_COLOR);
+        mPlayer2Btn.setBackgroundColor(BLACK_COLOR);
+        mPlayer2Btn.setTextColor(WHITE_COLOR);
+        mPlayer1Btn.setTextColor(BLACK_COLOR);
+    }
 }

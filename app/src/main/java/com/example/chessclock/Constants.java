@@ -44,5 +44,12 @@ final class Constants {
     static final String BLACK_INCREMENT_KEY = "black_increment";
     static final String BLACK_TIME_CONTROL_KEY = "black_time_control";
 
+    /* Game modes */
+    private static final GameMode BLITZ_3MIN = new GameMode("blitz_3min",true,180000,180000,2000,2000,0,0);
+    private static final GameMode BLITZ_1MIN = new GameMode("blitz_1min",true,60000,60000,2000,2000,0,0);
+    private static final GameMode RAPID_5MIN = new GameMode("rapid_5min",true,300000,300000,0,0,0,0);
+    private static final GameMode RAPID_10MIN = new GameMode("rapid_10min",true,600000,600000,0,0,0,0);
+
+    static final GameMode[] gameModes = new GameMode[]{BLITZ_1MIN,BLITZ_3MIN,RAPID_5MIN,RAPID_10MIN};
 }
 

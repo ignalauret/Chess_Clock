@@ -47,11 +47,11 @@
         android:key="white_time_category"
         app:isPreferenceVisible="false">
 
-        <com.example.chessclock.NumberPickerPreference
+        <com.example.chessclock.DoubleNumberPickerPreference
             android:key="white_starting_time"
             android:title="Starting Time"
             android:summary="Select the starting time for the white player"
-            android:defaultValue="2" />
+            android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="white_increment"
@@ -73,11 +73,11 @@
         android:key="black_time_category"
         app:isPreferenceVisible="false">
 
-        <com.example.chessclock.NumberPickerPreference
+        <com.example.chessclock.DoubleNumberPickerPreference
             android:key="black_starting_time"
             android:title="Starting Time"
             android:summary="Select the starting time for the black player"
-            android:defaultValue="2" />
+            android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="black_increment"
