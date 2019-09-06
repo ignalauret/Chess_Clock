@@ -24,6 +24,14 @@
         app:layout_constraintTop_toBottomOf="@+id/RestartBtn"
         app:layout_constraintVertical_bias="0.0" />
 
+    <TextView
+        android:id="@+id/testDelay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TestDelay"
+        tools:layout_editor_absoluteX="-2dp"
+        tools:layout_editor_absoluteY="-3dp" />
+
     <Button
         android:id="@+id/TimeBtn2"
         android:layout_width="0dp"

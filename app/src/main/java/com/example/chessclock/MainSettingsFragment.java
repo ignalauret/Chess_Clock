@@ -9,14 +9,7 @@ import android.support.v7.preference.PreferenceCategory;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 
-import static com.example.chessclock.Constants.BLACK_TIME_CATEGORY_KEY;
-import static com.example.chessclock.Constants.SAME_TIME_KEY;
-import static com.example.chessclock.Constants.STANDARD_GAME_MODE_KEY;
-import static com.example.chessclock.Constants.STANDARD_INCREMENT_KEY;
-import static com.example.chessclock.Constants.STANDARD_STARTING_TIME_KEY;
-import static com.example.chessclock.Constants.STANDARD_TIME_CATEGORY_KEY;
-import static com.example.chessclock.Constants.STANDARD_TIME_CONTROL_KEY;
-import static com.example.chessclock.Constants.WHITE_TIME_CATEGORY_KEY;
+import static com.example.chessclock.Constants.*;
 
 
 public class MainSettingsFragment extends PreferenceFragmentCompat {
@@ -54,7 +47,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         }
 
         /* Show dialog on the fragment */
-        if (dialogFragment != null) {
+        if (dialogFragment != null && this.getFragmentManager() != null) {
             dialogFragment.setTargetFragment(this, 0);
             dialogFragment.show(this.getFragmentManager(),
                     "android.support.v7.preference.PreferenceFragment.DIALOG");
@@ -125,14 +118,19 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
 
 
     /** Display manual time settings if show is true, else hide them */
-    private void showTimeDisplays(boolean show){
+    private void showTimeDisplays(boolean pre, boolean st, boolean d, boolean i, boolean tc){
         Preference mStartingTime = findPreference(STANDARD_STARTING_TIME_KEY);
+        Preference mDelay = findPreference(STANDARD_DELAY_KEY);
         Preference mIncrement = findPreference(STANDARD_INCREMENT_KEY);
         Preference mTimeControl = findPreference(STANDARD_TIME_CONTROL_KEY);
+        Preference mPredefinedMode = findPreference(STANDARD_PREDEFINED_MODE_KEY);
 
-        mStartingTime.setVisible(show);
-        mIncrement.setVisible(show);
-        mTimeControl.setVisible(show);
+        /* Set prefs visible depending on the parameters */
+        mPredefinedMode.setVisible(pre);
+        mStartingTime.setVisible(st);
+        mDelay.setVisible(d);
+        mIncrement.setVisible(i);
+        mTimeControl.setVisible(tc);
     }
 
 
@@ -145,16 +143,28 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
                 if(mList.getValue() != null) {
                     checkGameMode(mList.getValue());
                 } else {
-                    showTimeDisplays(true);
+                    showTimeDisplays(false,true,true,true,true);
                 }
-
                 break;
-            case "custom":
-                showTimeDisplays(true);
+            case "custom_mode":
+                showTimeDisplays(false,true,true,true,true);
+                break;
+            case "predefined_mode":
+                showTimeDisplays(true,false,false,false,false);
+                break;
+            case "blitz_mode":
+                showTimeDisplays(false,true,false,true,false);
+                break;
+            case "rapid_mode":
+                showTimeDisplays(false,true,false,false,false);
+                break;
+            case "rapid_delay_mode":
+                showTimeDisplays(false,true,true,false,false);
                 break;
             default:
-                showTimeDisplays(false);
+                showTimeDisplays(true,true,true,true,true);
                 break;
+
         }
     }
 }

@@ -6,12 +6,9 @@ final class Constants {
 
     /* === Time === */
     static final long TICK_TIME = 100;
-    static final long DEFAULT_STARTING_TIME = 3000;
 
     /* === Layout === */
     /* Colors */
-    static final int IDLE_PLAYER_COLOR = 0xFFaec2e0;
-    static final int ACTIVE_PLAYER_COLOR = 0xFFec5855;
     static final int ACTIVE_PLAYER_LOW_COLOR = 0xFFd12f1a;
     static final int WHITE_COLOR = 0xFFFFFFFF;
     static final int BLACK_COLOR = 0xFF000000;
@@ -29,8 +26,10 @@ final class Constants {
     static final String STANDARD_TIME_CATEGORY_KEY = "standard_time_category";
     static final String STANDARD_GAME_MODE_KEY = "standard_game_mode";
     static final String STANDARD_STARTING_TIME_KEY = "standard_starting_time";
+    static final String STANDARD_DELAY_KEY = "standard_delay";
     static final String STANDARD_INCREMENT_KEY = "standard_increment";
     static final String STANDARD_TIME_CONTROL_KEY = "standard_time_control";
+    static final String STANDARD_PREDEFINED_MODE_KEY = "standard_predefined_mode";
 
     /* Whites time category keys */
     static final String WHITE_TIME_CATEGORY_KEY = "white_time_category";
@@ -45,11 +44,11 @@ final class Constants {
     static final String BLACK_TIME_CONTROL_KEY = "black_time_control";
 
     /* Game modes */
-    private static final GameMode BLITZ_3MIN = new GameMode("blitz_3min",true,180000,180000,2000,2000,0,0);
-    private static final GameMode BLITZ_1MIN = new GameMode("blitz_1min",true,60000,60000,2000,2000,0,0);
-    private static final GameMode RAPID_5MIN = new GameMode("rapid_5min",true,300000,300000,0,0,0,0);
-    private static final GameMode RAPID_10MIN = new GameMode("rapid_10min",true,600000,600000,0,0,0,0);
-
-    static final GameMode[] gameModes = new GameMode[]{BLITZ_1MIN,BLITZ_3MIN,RAPID_5MIN,RAPID_10MIN};
+    private static final GameMode BLITZ_1MIN = new GameMode("predefined_mode","blitz_1min",true,60000,60000,0,0,2000,2000,0,0);
+    private static final GameMode BLITZ_3MIN = new GameMode("predefined_mode","blitz_3min",true,180000,180000,0,0,2000,2000,0,0);
+    private static final GameMode RAPID_5MIN = new GameMode("predefined_mode","rapid_5min",true,300000,300000,0,0,0,0,0,0);
+    private static final GameMode RAPID_10MIN = new GameMode("predefined_mode","rapid_10min",true,600000,600000,0,0,0,0,0,0);
+    private static final GameMode RAPID_5MIN_2DEL = new GameMode("predefined_mode","rapid_5min_2del",true,300000,300000,2,2,0,0,0,0);
+    static final GameMode[] gameModes = new GameMode[]{BLITZ_1MIN,BLITZ_3MIN,RAPID_5MIN,RAPID_10MIN,RAPID_5MIN_2DEL};
 }
 

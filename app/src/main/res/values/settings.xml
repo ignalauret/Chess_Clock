@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="GameMode">
-        <item>Blitz 3min</item>
-        <item>Blitz 1min</item>
+        <item>Predefined</item>
+        <item>Blitz</item>
+        <item>Rapid</item>
+        <item>Rapid w/Delay</item>
         <item>Custom</item>
     </string-array>
 
     <string-array name="GameModeValue">
-        <item>blitz_3min</item>
+        <item>predefined_mode</item>
+        <item>blitz_mode</item>
+        <item>rapid_mode</item>
+        <item>rapid_delay_mode</item>
+        <item>custom_mode</item>
+    </string-array>
+
+    <string-array name="PredefinedGameModes">
+        <item>Blitz 1 min</item>
+        <item>Blitz 3 min</item>
+        <item>Rapid 5 min</item>
+        <item>Rapid 10 min</item>
+        <item>Rapid 5 min w/2 sec delay</item>
+    </string-array>
+
+    <string-array name="PredefinedGameModesValues">
         <item>blitz_1min</item>
-        <item>custom</item>
+        <item>blitz_3min</item>
+        <item>rapid_5min</item>
+        <item>rapid_10min</item>
+        <item>rapid_5min_2del</item>
     </string-array>
 </resources>

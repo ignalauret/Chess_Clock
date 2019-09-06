@@ -21,6 +21,13 @@
             android:entries="@array/GameMode"
             android:entryValues="@array/GameModeValue"/>
 
+        <ListPreference
+            android:key="standard_predefined_mode"
+            android:title="Predefined Mode"
+            android:summary="Choose a Mode from the list"
+            android:entries="@array/PredefinedGameModes"
+            android:entryValues="@array/PredefinedGameModesValues"/>
+
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="standard_starting_time"
             android:title="Starting Time"
@@ -32,6 +39,12 @@
             android:title="Increment"
             android:summary="The remaining time adds up after each move"
             android:defaultValue="2" />
+
+        <com.example.chessclock.NumberPickerPreference
+            android:key="standard_delay"
+            android:title="Delay"
+            android:summary="Time it waits to start counting down in each move"
+            android:defaultValue="0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="standard_time_control"
