@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static com.example.chessclock.Constants.*;
+import static com.example.chessclock.Constants.WHITE_INCREMENT_KEY;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +26,6 @@ public class MainActivity extends AppCompatActivity {
     Button mPlayer2Btn;
     ImageButton mStartStopBtn;
     ImageButton mRestartBtn;
-    TextView mTestDelay;
 
     /* Time Variables */
     private long mTimeRemainingP1;
@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         android.support.v7.preference.PreferenceManager
                 .setDefaultValues(this, R.xml.user_preferences, false);
-        mTestDelay = findViewById(R.id.testDelay);
         initializeLayout();
         getPreferences();
         initialize();
@@ -69,16 +68,16 @@ public class MainActivity extends AppCompatActivity {
      */
     private void getPreferences(){
         if(mCurrentGameMode == null)
-            mCurrentGameMode = new GameMode(
-                    "def","def",true,1,0,0,0,0,0,0,0);
+            mCurrentGameMode = new GameMode("def","","def","",
+                    true,1,0,0,0,0,0,0,0);
         boolean restartFlag = false;
         SharedPreferences sharedPref = android.support.v7.preference.PreferenceManager
                         .getDefaultSharedPreferences(this);
 
         /* Check symmetric time or not */
-        Boolean sameTime = sharedPref.getBoolean(SAME_TIME_KEY,false);
-        if(mCurrentGameMode.symmetric != sameTime){
-            mCurrentGameMode.symmetric = sameTime;
+        boolean sameTime = sharedPref.getBoolean(SAME_TIME_KEY,false);
+        if(mCurrentGameMode.isSymmetric() != sameTime){
+            mCurrentGameMode.setSymmetry(sameTime);
             restartFlag = true;
         }
         /* If symmetric has been selected, then the times for each player are the same. */
@@ -87,8 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     STANDARD_GAME_MODE_KEY,"predefined_mode");
             assert gameMode != null;
             /* Restart if the mode has changed */
-            if(!mCurrentGameMode.name.equals(gameMode)) {
-                mCurrentGameMode.name = gameMode;
+            if(!mCurrentGameMode.getName(1).equals(gameMode)) {
+                mCurrentGameMode.setName(1,gameMode);
+                mCurrentGameMode.setName(2,gameMode);
                 restartFlag = true;
             }
             /* Get pref values using requireNonNull just in case */
@@ -109,24 +109,24 @@ public class MainActivity extends AppCompatActivity {
             switch(gameMode) {
                 case "custom_mode":
                     /* Custom Mode: Check all the prefs */
-                    if (mCurrentGameMode.startTimeP1 != mStartingTime) {
-                        mCurrentGameMode.startTimeP1 = mStartingTime;
-                        mCurrentGameMode.startTimeP2 = mStartingTime;
+                    if (mCurrentGameMode.getStartTime(1) != mStartingTime) {
+                        mCurrentGameMode.setStartTime(1,mStartingTime);
+                        mCurrentGameMode.setStartTime(2,mStartingTime);
                         restartFlag = true;
                     }
-                    if (mCurrentGameMode.delayP1 != mDelay) {
-                        mCurrentGameMode.delayP1 = mDelay;
-                        mCurrentGameMode.delayP2 = mDelay;
+                    if (mCurrentGameMode.getDelay(1) != mDelay) {
+                        mCurrentGameMode.setDelay(1, mDelay);
+                        mCurrentGameMode.setDelay(2, mDelay);
                         restartFlag = true;
                     }
-                    if (mCurrentGameMode.incrementP1 != mIncrement) {
-                        mCurrentGameMode.incrementP1 = mIncrement;
-                        mCurrentGameMode.incrementP2 = mIncrement;
+                    if (mCurrentGameMode.getIncrement(1) != mIncrement) {
+                        mCurrentGameMode.setIncrement(1, mIncrement);
+                        mCurrentGameMode.setIncrement(2,mIncrement);
                         restartFlag = true;
                     }
-                    if (mCurrentGameMode.timeControlP1 != mTimeControl) {
-                        mCurrentGameMode.timeControlP1 = mTimeControl;
-                        mCurrentGameMode.timeControlP2 = mTimeControl;
+                    if (mCurrentGameMode.getTimeControl(1) != mTimeControl) {
+                        mCurrentGameMode.setTimeControl(1,mTimeControl);
+                        mCurrentGameMode.setTimeControl(2,mTimeControl);
                         restartFlag = true;
                     }
                     break;
@@ -134,116 +134,247 @@ public class MainActivity extends AppCompatActivity {
                     /* Predefined mode: must check which mode is selected */
                     String mPredefinedMode = sharedPref.getString(
                             STANDARD_PREDEFINED_MODE_KEY,"blitz_3min");
-                    if (mCurrentGameMode.predefinedName == null ||
-                                !mCurrentGameMode.predefinedName.equals(mPredefinedMode)) {
-                        mCurrentGameMode.predefinedName = mPredefinedMode;
-                        setGameMode(mPredefinedMode);
+                    if (mCurrentGameMode.getPredefinedName(1) == null ||
+                                !mCurrentGameMode.getPredefinedName(1).equals(
+                                        mPredefinedMode)) {
+                        mCurrentGameMode.setPredefinedName(1,mPredefinedMode);
+                        mCurrentGameMode.setPredefinedName(2,mPredefinedMode);
+                        setGameMode(mPredefinedMode,0);
                         restartFlag = true;
                     }
                     break;
                 case "blitz_mode":
                     /* Blitz Mode: Starting time and increment */
-                    if (mCurrentGameMode.startTimeP1 != mStartingTime) {
-                        mCurrentGameMode.startTimeP1 = mStartingTime;
-                        mCurrentGameMode.startTimeP2 = mStartingTime;
+                    if (mCurrentGameMode.getStartTime(1) != mStartingTime) {
+                        mCurrentGameMode.setStartTime(1,mStartingTime);
+                        mCurrentGameMode.setStartTime(2,mStartingTime);
                         restartFlag = true;
                     }
-                    if (mCurrentGameMode.incrementP1 != mIncrement) {
-                        mCurrentGameMode.incrementP1 = mIncrement;
-                        mCurrentGameMode.incrementP2 = mIncrement;
+                    if (mCurrentGameMode.getIncrement(1) != mIncrement) {
+                        mCurrentGameMode.setIncrement(1, mIncrement);
+                        mCurrentGameMode.setIncrement(2,mIncrement);
                         restartFlag = true;
                     }
-                    mCurrentGameMode.delayP1 = 0;
-                    mCurrentGameMode.delayP2 = 0;
-                    mCurrentGameMode.timeControlP1 = 0;
-                    mCurrentGameMode.timeControlP2 = 0;
+                    mCurrentGameMode.setDelay(1,0);
+                    mCurrentGameMode.setDelay(2,0);
+                    mCurrentGameMode.setTimeControl(1,0);
+                    mCurrentGameMode.setTimeControl(2,0);
                     break;
                 case "rapid_mode":
                     /* Rapid Mode: Starting time */
-                    if (mCurrentGameMode.startTimeP1 != mStartingTime) {
-                        mCurrentGameMode.startTimeP1 = mStartingTime;
-                        mCurrentGameMode.startTimeP2 = mStartingTime;
+                    if (mCurrentGameMode.getStartTime(1) != mStartingTime) {
+                        mCurrentGameMode.setStartTime(1,mStartingTime);
+                        mCurrentGameMode.setStartTime(2,mStartingTime);
                         restartFlag = true;
                     }
-                    mCurrentGameMode.delayP1 = 0;
-                    mCurrentGameMode.delayP2 = 0;
-                    mCurrentGameMode.timeControlP1 = 0;
-                    mCurrentGameMode.timeControlP2 = 0;
-                    mCurrentGameMode.incrementP1 = 0;
-                    mCurrentGameMode.incrementP2 = 0;
+                    mCurrentGameMode.setDelay(1,0);
+                    mCurrentGameMode.setDelay(2,0);
+                    mCurrentGameMode.setTimeControl(1,0);
+                    mCurrentGameMode.setTimeControl(2,0);
+                    mCurrentGameMode.setIncrement(1,0);
+                    mCurrentGameMode.setIncrement(2,0);
                     break;
                 case "rapid_delay_mode":
                     /* Rapid w/delay mode: Starting time and delay. */
-                    if (mCurrentGameMode.startTimeP1 != mStartingTime) {
-                        mCurrentGameMode.startTimeP1 = mStartingTime;
-                        mCurrentGameMode.startTimeP2 = mStartingTime;
+                    if (mCurrentGameMode.getStartTime(1) != mStartingTime) {
+                        mCurrentGameMode.setStartTime(1,mStartingTime);
+                        mCurrentGameMode.setStartTime(2,mStartingTime);
                         restartFlag = true;
                     }
-                    if (mCurrentGameMode.delayP1 != mDelay) {
-                        mCurrentGameMode.delayP1 = mDelay;
-                        mCurrentGameMode.delayP2 = mDelay;
+                    if (mCurrentGameMode.getDelay(1) != mDelay) {
+                        mCurrentGameMode.setDelay(1, mDelay);
+                        mCurrentGameMode.setDelay(2, mDelay);
                         restartFlag = true;
                     }
-                    mCurrentGameMode.timeControlP1 = 0;
-                    mCurrentGameMode.timeControlP2 = 0;
-                    mCurrentGameMode.incrementP1 = 0;
-                    mCurrentGameMode.incrementP2 = 0;
+                    mCurrentGameMode.setTimeControl(1,0);
+                    mCurrentGameMode.setTimeControl(2,0);
+                    mCurrentGameMode.setIncrement(1,0);
+                    mCurrentGameMode.setIncrement(2,0);
                     break;
                 default:
                     /* Must be an error */
-                    mCurrentGameMode = new GameMode(
-                            " "," ",true,0,0,0,0,0,0,0,0);
+                    mCurrentGameMode = new GameMode("","","","",
+                            true,0,0,0,0,0,0,0,0);
                     restartFlag = true;
             }
 
         /* If it isn't symmetric, the values for each player must be checked */
         } else {
+            String whiteGameMode = sharedPref.getString(
+                    WHITE_GAME_MODE_KEY,"predefined_mode");
+            assert whiteGameMode != null;
+            /* Restart if the mode has changed */
+            if(!mCurrentGameMode.getName(1).equals(whiteGameMode)) {
+                mCurrentGameMode.setName(1,whiteGameMode);
+                restartFlag = true;
+            }
             /* Get pref values using requireNonNull just in case */
-            String mWhiteStartingTimeString = sharedPref.getString(WHITE_STARTING_TIME_KEY,
-                    "3:0");
+            String mWhiteStartingTimeString = sharedPref.getString(
+                    WHITE_STARTING_TIME_KEY, "3:0");
             long mWhiteIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
-                    WHITE_INCREMENT_KEY, "0"))) * 1000;
-            int mWhiteTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
-                    WHITE_TIME_CONTROL_KEY,"0")));
+                    WHITE_INCREMENT_KEY, "1"))) * 1000;
+            long mWhiteDelay = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
+                    WHITE_DELAY_KEY, "1"))) * 1000;
+            /* Parse the time from min and secs into millis */
+            assert mWhiteStartingTimeString != null;
+            String[] whiteSplattedTime = mWhiteStartingTimeString.split(":");
+            long mWhiteStartingTime = Long.parseLong(whiteSplattedTime[0]) * 60000 +
+                                         Long.parseLong(whiteSplattedTime[1]) * 1000;
+            /* Check the correct settings depending on the selected game mode */
+            switch(whiteGameMode) {
+                case "custom_mode":
+                    /* Custom Mode: Check all the prefs */
+                    if (mCurrentGameMode.getStartTime(1) != mWhiteStartingTime) {
+                        mCurrentGameMode.setStartTime(1, mWhiteStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getDelay(1) != mWhiteDelay) {
+                        mCurrentGameMode.setDelay(1, mWhiteDelay);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getIncrement(1) != mWhiteIncrement) {
+                        mCurrentGameMode.setIncrement(1, mWhiteIncrement);
+                        restartFlag = true;
+                    }
+                    break;
+                case "predefined_mode":
+                    /* Predefined mode: must check which mode is selected */
+                    String mPredefinedMode = sharedPref.getString(
+                            WHITE_PREDEFINED_MODE_KEY, "blitz_3min");
+                    if (mCurrentGameMode.getPredefinedName(1) == null ||
+                                !mCurrentGameMode.getPredefinedName(1).equals(
+                                        mPredefinedMode)) {
+                        mCurrentGameMode.setPredefinedName(1,mPredefinedMode);
+                        setGameMode(mPredefinedMode,1);
+                        restartFlag = true;
+                    }
+                    break;
+                case "blitz_mode":
+                    /* Blitz Mode: Starting time and increment */
+                    if (mCurrentGameMode.getStartTime(1) != mWhiteStartingTime) {
+                        mCurrentGameMode.setStartTime(1, mWhiteStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getIncrement(1) != mWhiteIncrement) {
+                        mCurrentGameMode.setIncrement(1, mWhiteIncrement);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setDelay(1, 0);
+                    break;
+                case "rapid_mode":
+                    /* Rapid Mode: Starting time */
+                    if (mCurrentGameMode.getStartTime(1) != mWhiteStartingTime) {
+                        mCurrentGameMode.setStartTime(1, mWhiteStartingTime);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setDelay(1, 0);
+                    mCurrentGameMode.setIncrement(1, 0);
+                    break;
+                case "rapid_delay_mode":
+                    /* Rapid w/delay mode: Starting time and delay. */
+                    if (mCurrentGameMode.getStartTime(1) != mWhiteStartingTime) {
+                        mCurrentGameMode.setStartTime(1, mWhiteStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getDelay(1) != mWhiteDelay) {
+                        mCurrentGameMode.setDelay(1, mWhiteDelay);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setIncrement(1, 0);
+                    break;
+                default:
+                    /* Must be an error */
+                    mCurrentGameMode = new GameMode("", "","","",
+                            true,0,0,0,0,0,0, 0, 0);
+                    restartFlag = true;
+            }
+            String blackGameMode = sharedPref.getString(
+                    BLACK_GAME_MODE_KEY,"predefined_mode");
+            assert blackGameMode != null;
+            /* Restart if the mode has changed */
+            if(!mCurrentGameMode.getName(2).equals(blackGameMode)) {
+                mCurrentGameMode.setName(2,blackGameMode);
+                restartFlag = true;
+            }
+            /* Get pref values using requireNonNull just in case */
             String mBlackStartingTimeString = sharedPref.getString(
                     BLACK_STARTING_TIME_KEY, "3:0");
             long mBlackIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
-                    BLACK_INCREMENT_KEY, "0"))) * 1000;
-            int mBlackTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
-                    BLACK_TIME_CONTROL_KEY, "0")));
+                    BLACK_INCREMENT_KEY, "1"))) * 1000;
+            long mBlackDelay = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
+                    BLACK_DELAY_KEY, "1"))) * 1000;
             /* Parse the time from min and secs into millis */
-            assert mWhiteStartingTimeString != null;
-            String[] splattedWhiteTime = mWhiteStartingTimeString.split(":");
-            long mWhiteStartingTime = Long.parseLong(splattedWhiteTime[0])*60000 +
-                                              Long.parseLong(splattedWhiteTime[1]) * 1000;
             assert mBlackStartingTimeString != null;
-            String[] splattedBlackTime = mBlackStartingTimeString.split(":");
-            long mBlackStartingTime = Long.parseLong(splattedBlackTime[0])*60000 +
-                                              Long.parseLong(splattedBlackTime[1]) * 1000;
-            /* Apply changes, if anyone changes restarts the clocks */
-            if(mCurrentGameMode.startTimeP1 != mWhiteStartingTime){
-                mCurrentGameMode.startTimeP1 = mWhiteStartingTime;
-                restartFlag = true;
-            }
-            if(mCurrentGameMode.timeControlP1 != mWhiteTimeControl){
-                mCurrentGameMode.timeControlP1 = mWhiteTimeControl;
-                restartFlag = true;
-            }
-            if(mCurrentGameMode.incrementP1 != mWhiteIncrement){
-                mCurrentGameMode.incrementP1 = mWhiteIncrement;
-                restartFlag = true;
-            }
-            if(mCurrentGameMode.startTimeP2 != mBlackStartingTime){
-                mCurrentGameMode.startTimeP2 = mBlackStartingTime;
-                restartFlag = true;
-            }
-            if(mCurrentGameMode.timeControlP2 != mBlackTimeControl){
-                mCurrentGameMode.timeControlP2 = mBlackTimeControl;
-                restartFlag = true;
-            }
-            if(mCurrentGameMode.incrementP2 != mBlackIncrement){
-                mCurrentGameMode.incrementP2 = mBlackIncrement;
-                restartFlag = true;
+            String[] blackSplattedTime = mBlackStartingTimeString.split(":");
+            long mBlackStartingTime = Long.parseLong(blackSplattedTime[0]) * 60000 +
+                                              Long.parseLong(blackSplattedTime[1]) * 1000;
+            /* Check the correct settings depending on the selected game mode */
+            switch(blackGameMode) {
+                case "custom_mode":
+                    /* Custom Mode: Check all the prefs */
+                    if (mCurrentGameMode.getStartTime(2) != mBlackStartingTime) {
+                        mCurrentGameMode.setStartTime(2, mBlackStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getDelay(2) != mBlackDelay) {
+                        mCurrentGameMode.setDelay(2, mBlackDelay);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getIncrement(2) != mBlackIncrement) {
+                        mCurrentGameMode.setIncrement(2, mBlackIncrement);
+                        restartFlag = true;
+                    }
+                    break;
+                case "predefined_mode":
+                    /* Predefined mode: must check which mode is selected */
+                    String mPredefinedMode = sharedPref.getString(
+                            BLACK_PREDEFINED_MODE_KEY, "blitz_3min");
+                    if (mCurrentGameMode.getPredefinedName(1) == null ||
+                                !mCurrentGameMode.getPredefinedName(1).equals(
+                                        mPredefinedMode)) {
+                        mCurrentGameMode.setPredefinedName(1,mPredefinedMode);
+                        setGameMode(mPredefinedMode,2);
+                        restartFlag = true;
+                    }
+                    break;
+                case "blitz_mode":
+                    /* Blitz Mode: Starting time and increment */
+                    if (mCurrentGameMode.getStartTime(2) != mBlackStartingTime) {
+                        mCurrentGameMode.setStartTime(2, mBlackStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getIncrement(2) != mBlackIncrement) {
+                        mCurrentGameMode.setIncrement(2, mBlackIncrement);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setDelay(2, 0);
+                    break;
+                case "rapid_mode":
+                    /* Rapid Mode: Starting time */
+                    if (mCurrentGameMode.getStartTime(2) != mBlackStartingTime) {
+                        mCurrentGameMode.setStartTime(2, mBlackStartingTime);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setDelay(2, 0);
+                    mCurrentGameMode.setIncrement(2, 0);
+                    break;
+                case "rapid_delay_mode":
+                    /* Rapid w/delay mode: Starting time and delay. */
+                    if (mCurrentGameMode.getStartTime(2) != mBlackStartingTime) {
+                        mCurrentGameMode.setStartTime(2, mBlackStartingTime);
+                        restartFlag = true;
+                    }
+                    if (mCurrentGameMode.getDelay(2) != mBlackDelay) {
+                        mCurrentGameMode.setDelay(2, mBlackDelay);
+                        restartFlag = true;
+                    }
+                    mCurrentGameMode.setIncrement(2, 0);
+                    break;
+                default:
+                    /* Must be an error */
+                    mCurrentGameMode = new GameMode("", "","","",
+                            true, 0, 0, 0, 0, 0, 0, 0, 0);
+                    restartFlag = true;
             }
         }
         if(restartFlag) restart();
@@ -251,7 +382,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Go to Move recognition activity
+     * Go to Move recognition activity.
      */
     public void goToSpeechRecognition(View view) {
         Intent intent = new Intent(this, SpeechRecognition.class);
@@ -260,16 +391,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Go to Settings activity
+     * Go to Settings activity.
      */
     public void goToSettings(View view) {
         Intent intent = new Intent(this, Settings.class);
         startActivity(intent);
     }
 
+    /* ============================== Time Methods ============================== */
 
     /**
-     * Start or pause time counting
+     * Start or pause time counting on the clock, set the icon play/pause and set game paused flag.
      */
     public void startStop() {
         if(mGamePaused) {
@@ -298,14 +430,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * Restart the clocks
+     * Restart the clocks and the UI.
      */
     public void restart() {
         stop();
         initialize();
     }
-
-    /* ============================== Time Methods ============================== */
 
     /**
      * Ends Player 1 turn and starts player 2. Sets timers, flags, changes colors and increments
@@ -336,42 +466,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void startDelay(int player) {
-        if(player == 1) {
-            if(mCurrentGameMode.delayP1 > 0) {
-                long delay = mCurrentGameMode.delayP1;
+    private void startDelay(final int player) {
+            if(mCurrentGameMode.getDelay(player) > 0) {
+                long delay = mCurrentGameMode.getDelay(player);
                 mCountDownTimer = new CountDownTimer(delay,TICK_TIME) {
                     @Override
-                    public void onTick(long millisUntilFinished) {
-                        mTestDelay.setText(String.format(Locale.getDefault(),"%02d",millisUntilFinished));
-                    }
+                    public void onTick(long millisUntilFinished) {}
                     @Override
                     public void onFinish() {
-                        startTimer(1);
+                        startTimer(player);
                     }
 
                 }.start();
             } else {
-                startTimer(1);
+                startTimer(player);
             }
-        } else {
-            if(mCurrentGameMode.delayP2 > 0) {
-                long delay = mCurrentGameMode.delayP2;
-                mCountDownTimer = new CountDownTimer(delay,TICK_TIME) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        mTestDelay.setText(String.format(Locale.getDefault(),"%02d",millisUntilFinished));
-                    }
-                    @Override
-                    public void onFinish() {
-                        startTimer(2);
-                    }
-
-                }.start();
-            } else {
-                startTimer(2);
-            }
-        }
     }
 
     /**
@@ -471,11 +580,11 @@ public class MainActivity extends AppCompatActivity {
      * @param player the player to increment and update.
      */
     private void incrementTime(int player) {
-        if(player == 1 && mMovesCounter >= mCurrentGameMode.timeControlP1) {
-            mTimeRemainingP1 += mCurrentGameMode.incrementP1;
+        if(player == 1) {
+            mTimeRemainingP1 += mCurrentGameMode.getIncrement(1);
             updateClock(1,mTimeRemainingP1);
-        } else if (player == 2 && mMovesCounter >= mCurrentGameMode.timeControlP2) {
-            mTimeRemainingP2 += mCurrentGameMode.incrementP2;
+        } else if (player == 2) {
+            mTimeRemainingP2 += mCurrentGameMode.getIncrement(2);
             updateClock(2,mTimeRemainingP2);
         }
     }
@@ -486,12 +595,21 @@ public class MainActivity extends AppCompatActivity {
      * modes in the list.
      * @param gameMode a string with the gme modes name.
      */
-    private void setGameMode(String gameMode){
-        for (GameMode mode : gameModes) {
-            if(mode.predefinedName.equals(gameMode)) {
-                mCurrentGameMode = new GameMode(mode);
+    private void setGameMode(String gameMode, int player){
+        if(player == 0) {
+            for (GameMode mode : gameModes) {
+                if(mode.getPredefinedName(1).equals(gameMode)) {
+                    mCurrentGameMode = new GameMode(mode);
+                }
+            }
+        } else {
+            for (GameMode mode : gameModes) {
+                if(mode.getPredefinedName(player).equals(gameMode)) {
+                    mCurrentGameMode.copyValues(mode, player);
+                }
             }
         }
+
     }
     
     /* ============================== Game Control ============================== */
@@ -520,11 +638,11 @@ public class MainActivity extends AppCompatActivity {
     private void initialize() {
         resetColors();
         /* Init times for each player */
-        mTimeRemainingP1 = mCurrentGameMode.startTimeP1;
-        mTimeRemainingP2 = mCurrentGameMode.startTimeP2;
+        mTimeRemainingP1 = mCurrentGameMode.getStartTime(1);
+        mTimeRemainingP2 = mCurrentGameMode.getStartTime(2);
         /* Update times on the UI */
-        updateClock(1,mCurrentGameMode.startTimeP1);
-        updateClock(2,mCurrentGameMode.startTimeP2);
+        updateClock(1,mCurrentGameMode.getStartTime(1));
+        updateClock(2,mCurrentGameMode.getStartTime(2));
         /* Set flags */
         mTurnP1 = true;
         mGamePaused = true;
@@ -569,8 +687,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void resetColors(){
-        mPlayer1Btn.setBackgroundColor(WHITE_COLOR);
-        mPlayer2Btn.setBackgroundColor(BLACK_COLOR);
         mPlayer2Btn.setTextColor(WHITE_COLOR);
         mPlayer1Btn.setTextColor(BLACK_COLOR);
     }

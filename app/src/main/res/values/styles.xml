@@ -3,10 +3,15 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        <!--Color de la barra de arriba-->
+        <item name="colorPrimaryDark">#1976D2</item>
+        <item name="colorAccent">#FF5D6D</item>
+        <item name="colorPrimary">#0288D1</item>
+        <item name="colorControlNormal">#1976D2</item>
+        <item name="android:textColorPrimary">#0288D1</item>
+        <!--Fondo de los botones-->
+        <item name="colorButtonNormal">@android:color/transparent</item>
     </style>
 
 

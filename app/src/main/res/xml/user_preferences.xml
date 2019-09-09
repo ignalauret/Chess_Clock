@@ -46,11 +46,11 @@
             android:summary="Time it waits to start counting down in each move"
             android:defaultValue="0" />
 
-        <com.example.chessclock.NumberPickerPreference
-            android:key="standard_time_control"
-            android:title="Time Control"
-            android:summary="Increment starts at move"
-            android:defaultValue="0" />
+        <!--<com.example.chessclock.NumberPickerPreference-->
+            <!--android:key="standard_time_control"-->
+            <!--android:title="Time Control"-->
+            <!--android:summary="Increment starts at move"-->
+            <!--android:defaultValue="0" />-->
 
     </PreferenceCategory>
 
@@ -59,6 +59,20 @@
         android:title="Time for White"
         android:key="white_time_category"
         app:isPreferenceVisible="false">
+
+        <ListPreference
+            android:key="white_game_mode"
+            android:title="Game Mode"
+            android:summary="Choose a Mode"
+            android:entries="@array/GameMode"
+            android:entryValues="@array/GameModeValue"/>
+
+        <ListPreference
+            android:key="white_predefined_mode"
+            android:title="Predefined Mode"
+            android:summary="Choose a Mode from the list"
+            android:entries="@array/PredefinedGameModes"
+            android:entryValues="@array/PredefinedGameModesValues"/>
 
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="white_starting_time"
@@ -73,10 +87,16 @@
             android:defaultValue="2" />
 
         <com.example.chessclock.NumberPickerPreference
-            android:key="white_time_control"
-            android:title="Time Control"
-            android:summary="Whites increment starts at move"
+            android:key="white_delay"
+            android:title="Delay"
+            android:summary="Time it waits to start counting down in each move"
             android:defaultValue="0" />
+
+        <!--<com.example.chessclock.NumberPickerPreference-->
+            <!--android:key="white_time_control"-->
+            <!--android:title="Time Control"-->
+            <!--android:summary="Whites increment starts at move"-->
+            <!--android:defaultValue="0" />-->
 
     </PreferenceCategory>
 
@@ -85,6 +105,20 @@
         android:title="Time for Black"
         android:key="black_time_category"
         app:isPreferenceVisible="false">
+
+        <ListPreference
+            android:key="black_game_mode"
+            android:title="Game Mode"
+            android:summary="Choose a Mode"
+            android:entries="@array/GameMode"
+            android:entryValues="@array/GameModeValue"/>
+
+        <ListPreference
+            android:key="black_predefined_mode"
+            android:title="Predefined Mode"
+            android:summary="Choose a Mode from the list"
+            android:entries="@array/PredefinedGameModes"
+            android:entryValues="@array/PredefinedGameModesValues"/>
 
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="black_starting_time"
@@ -99,10 +133,16 @@
             android:defaultValue="2" />
 
         <com.example.chessclock.NumberPickerPreference
-            android:key="black_time_control"
-            android:title="Time Control"
-            android:summary="Blacks increment starts at move"
+            android:key="black_delay"
+            android:title="Delay"
+            android:summary="Time it waits to start counting down in each move"
             android:defaultValue="0" />
+
+        <!--<com.example.chessclock.NumberPickerPreference-->
+            <!--android:key="black_time_control"-->
+            <!--android:title="Time Control"-->
+            <!--android:summary="Blacks increment starts at move"-->
+            <!--android:defaultValue="0" />-->
 
     </PreferenceCategory>
 
