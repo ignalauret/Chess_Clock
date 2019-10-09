@@ -16,7 +16,7 @@ import static com.example.chessclock.Constants.*;
 
 public class MainSettingsFragment extends PreferenceFragmentCompat {
 
-    private String TAG = "MainSettingsFragment";
+    public String TAG = "MainSettingsFragment";
 
     public MainSettingsFragment() {
         // Required empty public constructor
@@ -135,7 +135,7 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
 
 
     /** Display manual time settings if show is true, else hide them */
-    private void showTimeDisplays(boolean pre, boolean st, boolean d, boolean i, boolean tc){
+    private void showTimeDisplays(boolean pre, boolean st, boolean d, boolean i){
         Preference mStartingTime = findPreference(STANDARD_STARTING_TIME_KEY);
         Preference mDelay = findPreference(STANDARD_DELAY_KEY);
         Preference mIncrement = findPreference(STANDARD_INCREMENT_KEY);
@@ -202,26 +202,26 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
                 if(mList.getValue() != null) {
                     checkGameMode(mList.getValue());
                 } else {
-                    showTimeDisplays(false,true,true,true,true);
+                    showTimeDisplays(false,true,true,true);
                 }
                 break;
             case "custom_mode":
-                showTimeDisplays(false,true,true,true,true);
+                showTimeDisplays(false,true,true,true);
                 break;
             case "predefined_mode":
-                showTimeDisplays(true,false,false,false,false);
+                showTimeDisplays(true,false,false,false);
                 break;
             case "blitz_mode":
-                showTimeDisplays(false,true,false,true,false);
+                showTimeDisplays(false,true,false,true);
                 break;
             case "rapid_mode":
-                showTimeDisplays(false,true,false,false,false);
+                showTimeDisplays(false,true,false,false);
                 break;
             case "rapid_delay_mode":
-                showTimeDisplays(false,true,true,false,false);
+                showTimeDisplays(false,true,true,false);
                 break;
             default:
-                showTimeDisplays(true,true,true,true,true);
+                showTimeDisplays(true,true,true,true);
                 break;
 
         }

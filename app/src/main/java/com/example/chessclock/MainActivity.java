@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -19,7 +18,7 @@ import static com.example.chessclock.Constants.WHITE_INCREMENT_KEY;
 
 public class MainActivity extends AppCompatActivity {
 
-    String TAG = "MainActivity";
+    public String TAG = "MainActivity";
     
     /* Layout Elements */
     Button mPlayer1Btn;
@@ -656,6 +655,10 @@ public class MainActivity extends AppCompatActivity {
 
     /* ============================== Layout ============================== */
 
+    /**
+     * References the views in the layout, hides app bar in main screen and sets onClick listeners
+     * to the buttons.
+     */
     private void initializeLayout() {
         if(getActionBar() != null) getActionBar().hide();
         if(getSupportActionBar() != null) getSupportActionBar().hide();
@@ -689,7 +692,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Sets the text colors to its default values (Black and White).
+     */
     private void resetColors(){
         mPlayer2Btn.setTextColor(WHITE_COLOR);
         mPlayer1Btn.setTextColor(BLACK_COLOR);
