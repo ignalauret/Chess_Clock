@@ -73,8 +73,37 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         if(blackGameMode.getValue() == null) blackGameMode.setValueIndex(4);
     }
 
+    /**
+     * The listener that manages the changes in the preferences.
+     */
+    private Preference.OnPreferenceChangeListener listener =
+            new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    Log.d(TAG, "onPreferenceChange: "+ newValue.toString());
+                    switch (preference.getKey()) {
+                        case SAME_TIME_KEY:
+                            changeDisplay(newValue.toString());
+                            break;
+                        case STANDARD_GAME_MODE_KEY:
+                            checkGameMode(newValue.toString());
+                            break;
+                        case WHITE_GAME_MODE_KEY:
+                            checkWhiteGameMode(newValue.toString());
+                            break;
+                        case BLACK_GAME_MODE_KEY:
+                            checkBlackGameMode(newValue.toString());
+                            break;
+                    }
 
-    /** Bind a preference to the listener to call onPreferenceChange when its modified */
+                    return true;
+                }
+            };
+
+    /**
+     * Bind a preference to the listener to call onPreferenceChange when its modified.
+     * @param pref the preference to bind.
+     */
     private void bindPreferences(Preference pref){
         pref.setOnPreferenceChangeListener(listener);
         listener.onPreferenceChange(pref,
@@ -82,40 +111,19 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
                 .getString(pref.toString(),""));
     }
 
-
-    /** Listens to changes on BOUND preferences */
-    private Preference.OnPreferenceChangeListener listener =
-            new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            Log.d(TAG, "onPreferenceChange: "+ newValue.toString());
-            switch (preference.getKey()) {
-                case SAME_TIME_KEY:
-                    changeDisplay(newValue.toString());
-                    break;
-                case STANDARD_GAME_MODE_KEY:
-                    checkGameMode(newValue.toString());
-                    break;
-                case WHITE_GAME_MODE_KEY:
-                    checkWhiteGameMode(newValue.toString());
-                    break;
-                case BLACK_GAME_MODE_KEY:
-                    checkBlackGameMode(newValue.toString());
-                    break;
-            }
-
-            return true;
-        }
-    };
-
-
-    /** Display standard time if Symmetric switch is checked, else display white and black time */
+    /**
+     * Display standard time if Symmetric switch is checked, else display white and black time
+     * @param value empty string at start, and a boolean in string format that says if the switch
+     *              is enabled.
+     */
     private void changeDisplay(String value){
         boolean mode;
         if(value.equals("")){
             SwitchPreference mSwitch = (SwitchPreference) findPreference(SAME_TIME_KEY);
             mode = mSwitch.isChecked();
-        } else mode = Boolean.parseBoolean(value);
+        } else {
+            mode = Boolean.parseBoolean(value);
+        }
         PreferenceCategory mSameTimeCategory =
                 (PreferenceCategory) findPreference(STANDARD_TIME_CATEGORY_KEY);
         PreferenceCategory mWhiteTimeCategory =
@@ -134,7 +142,13 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
     }
 
 
-    /** Display manual time settings if show is true, else hide them */
+    /**
+     * Display each symmetric mode setting if its flag is true, or hide it if its false.
+     * @param pre Predefined Mode setting flag.
+     * @param st Starting Time setting flag.
+     * @param d Delay setting flag.
+     * @param i Increment setting flag.
+     */
     private void showTimeDisplays(boolean pre, boolean st, boolean d, boolean i){
         Preference mStartingTime = findPreference(STANDARD_STARTING_TIME_KEY);
         Preference mDelay = findPreference(STANDARD_DELAY_KEY);
@@ -150,6 +164,13 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         //mTimeControl.setVisible(tc);
     }
 
+    /**
+     * Display each white setting if its flag is true, or hide it if its false.
+     * @param pre Predefined Mode setting flag.
+     * @param st Starting Time setting flag.
+     * @param d Delay setting flag.
+     * @param i Increment setting flag.
+     */
     private void showWhitePrefs(boolean pre, boolean st, boolean d, boolean i) {
         Preference mStartingTime = findPreference(WHITE_STARTING_TIME_KEY);
         Preference mDelay = findPreference(WHITE_DELAY_KEY);
@@ -171,6 +192,13 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         mBlackTimeCategory.setVisible(true);
     }
 
+    /**
+     * Display each black setting if its flag is true, or hide it if its false.
+     * @param pre Predefined Mode setting flag.
+     * @param st Starting Time setting flag.
+     * @param d Delay setting flag.
+     * @param i Increment setting flag.
+     */
     private void showBlackPrefs(boolean pre, boolean st, boolean d, boolean i) {
         Preference mStartingTime = findPreference(BLACK_STARTING_TIME_KEY);
         Preference mDelay = findPreference(BLACK_DELAY_KEY);
@@ -193,7 +221,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
     }
 
 
-    /** Display manual time settings if custom mode is selected */
+    /**
+     * Manage the symmetric mode settings that must be displayed depending in the selected game mode.
+     * @param gameMode the current selected game mode.
+     */
     private void checkGameMode(String gameMode){
         switch (gameMode){
             case "":
@@ -227,6 +258,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * Manage the white settings that must be displayed depending in the selected game mode.
+     * @param gameMode the current selected game mode.
+     */
     private void checkWhiteGameMode(String gameMode){
         switch (gameMode){
             case "":
@@ -260,6 +295,10 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * Manage the black settings that must be displayed depending in the selected game mode.
+     * @param gameMode the current selected game mode.
+     */
     private void checkBlackGameMode(String gameMode){
         switch (gameMode){
             case "":
