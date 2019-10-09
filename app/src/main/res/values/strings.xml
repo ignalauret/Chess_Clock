@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">Chess Clock</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="summary_symmetric">The players have the same time settings</string>
+    <string name="summary_game_mode">Choose a mode</string>
+    <string name="summary_starting_time">Select the starting time</string>
+    <string name="summary_increment">Select how much the remaining time is going to add up after each move</string>
+    <string name="summary_delay">Select how much is going to wait before it starts counting down in each move</string>
+    <string name="summary_predefined_mode">Choose one of the predefined modes</string>
+    <string name="title_symmetric">Symmetric Times</string>
+    <string name="title_game_mode">Game Mode</string>
+    <string name="title_starting_time">Starting Time</string>
+    <string name="title_increment">Increment</string>
+    <string name="title_delay">Delay</string>
+    <string name="title_predefined_mode">Predefined Mode</string>
 </resources>

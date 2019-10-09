@@ -9,7 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
     /* Script Tools */
     private CountDownTimer mCountDownTimer;
-    private int mMovesCounter;
+    private int mMovesCounter; //TODO: Show moves counter on UI.
 
     /* Flags */
     private boolean mTurnP1;
@@ -95,9 +95,9 @@ public class MainActivity extends AppCompatActivity {
             String mStartingTimeString = sharedPref.getString(
                     STANDARD_STARTING_TIME_KEY, "3:0");
             long mIncrement = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
-                    STANDARD_INCREMENT_KEY, "1"))) * 1000;
+                    STANDARD_INCREMENT_KEY, "2"))) * 1000;
             long mDelay = Long.parseLong(Objects.requireNonNull(sharedPref.getString(
-                    STANDARD_DELAY_KEY, "1"))) * 1000;
+                    STANDARD_DELAY_KEY, "0"))) * 1000;
             int mTimeControl = Integer.parseInt(Objects.requireNonNull(sharedPref.getString(
                     STANDARD_TIME_CONTROL_KEY, "0")));
             /* Parse the time from min and secs into millis */
@@ -383,10 +383,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Go to Move recognition activity.
+     * TODO: Speech Recognition feature. Just shows toast of "Not available yet".
      */
     public void goToSpeechRecognition(View view) {
-        Intent intent = new Intent(this, SpeechRecognition.class);
-        startActivity(intent);
+        //Intent intent = new Intent(this, SpeechRecognition.class);
+        //startActivity(intent);
+        Toast.makeText(this,"This feature will be available soon.",Toast.LENGTH_LONG).show();
     }
 
 
@@ -655,6 +657,8 @@ public class MainActivity extends AppCompatActivity {
     /* ============================== Layout ============================== */
 
     private void initializeLayout() {
+        if(getActionBar() != null) getActionBar().hide();
+        if(getSupportActionBar() != null) getSupportActionBar().hide();
         mPlayer1Btn = findViewById(R.id.TimeBtn1);
         mPlayer2Btn = findViewById(R.id.TimeBtn2);
         mStartStopBtn = findViewById(R.id.PlayPauseBtn);

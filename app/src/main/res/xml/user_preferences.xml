@@ -16,34 +16,34 @@
 
         <ListPreference
             android:key="standard_game_mode"
-            android:title="Game Mode"
-            android:summary="Choose a Mode"
+            android:title="@string/title_game_mode"
+            android:summary="@string/summary_game_mode"
             android:entries="@array/GameMode"
             android:entryValues="@array/GameModeValue"/>
 
         <ListPreference
             android:key="standard_predefined_mode"
-            android:title="Predefined Mode"
-            android:summary="Choose a Mode from the list"
+            android:title="@string/title_predefined_mode"
+            android:summary="@string/summary_predefined_mode"
             android:entries="@array/PredefinedGameModes"
             android:entryValues="@array/PredefinedGameModesValues"/>
 
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="standard_starting_time"
-            android:title="Starting Time"
-            android:summary="Select the starting time for the players"
+            android:title="@string/title_starting_time"
+            android:summary="@string/summary_starting_time"
             android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="standard_increment"
-            android:title="Increment"
-            android:summary="The remaining time adds up after each move"
+            android:title="@string/title_increment"
+            android:summary="@string/summary_increment"
             android:defaultValue="2" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="standard_delay"
-            android:title="Delay"
-            android:summary="Time it waits to start counting down in each move"
+            android:title="@string/title_delay"
+            android:summary="@string/summary_delay"
             android:defaultValue="0" />
 
         <!--<com.example.chessclock.NumberPickerPreference-->
@@ -62,34 +62,34 @@
 
         <ListPreference
             android:key="white_game_mode"
-            android:title="Game Mode"
-            android:summary="Choose a Mode"
+            android:title="@string/title_game_mode"
+            android:summary="@string/summary_game_mode"
             android:entries="@array/GameMode"
             android:entryValues="@array/GameModeValue"/>
 
         <ListPreference
             android:key="white_predefined_mode"
-            android:title="Predefined Mode"
-            android:summary="Choose a Mode from the list"
+            android:title="@string/title_predefined_mode"
+            android:summary="@string/summary_predefined_mode"
             android:entries="@array/PredefinedGameModes"
             android:entryValues="@array/PredefinedGameModesValues"/>
 
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="white_starting_time"
-            android:title="Starting Time"
-            android:summary="Select the starting time for the white player"
+            android:title="@string/title_starting_time"
+            android:summary="@string/summary_starting_time"
             android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="white_increment"
-            android:title="Increment"
-            android:summary="Whites remaining time adds up after each move"
+            android:title="@string/title_increment"
+            android:summary="@string/summary_increment"
             android:defaultValue="2" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="white_delay"
-            android:title="Delay"
-            android:summary="Time it waits to start counting down in each move"
+            android:title="@string/title_delay"
+            android:summary="@string/summary_delay"
             android:defaultValue="0" />
 
         <!--<com.example.chessclock.NumberPickerPreference-->
@@ -108,34 +108,34 @@
 
         <ListPreference
             android:key="black_game_mode"
-            android:title="Game Mode"
-            android:summary="Choose a Mode"
+            android:title="@string/title_game_mode"
+            android:summary="@string/summary_game_mode"
             android:entries="@array/GameMode"
             android:entryValues="@array/GameModeValue"/>
 
         <ListPreference
             android:key="black_predefined_mode"
-            android:title="Predefined Mode"
-            android:summary="Choose a Mode from the list"
+            android:title="@string/title_predefined_mode"
+            android:summary="@string/summary_predefined_mode"
             android:entries="@array/PredefinedGameModes"
             android:entryValues="@array/PredefinedGameModesValues"/>
 
         <com.example.chessclock.DoubleNumberPickerPreference
             android:key="black_starting_time"
-            android:title="Starting Time"
-            android:summary="Select the starting time for the black player"
+            android:title="@string/title_starting_time"
+            android:summary="@string/summary_starting_time"
             android:defaultValue="3:0" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="black_increment"
-            android:title="Increment"
-            android:summary="Blacks remaining time adds up after each move"
+            android:title="@string/title_increment"
+            android:summary="@string/summary_increment"
             android:defaultValue="2" />
 
         <com.example.chessclock.NumberPickerPreference
             android:key="black_delay"
-            android:title="Delay"
-            android:summary="Time it waits to start counting down in each move"
+            android:title="@string/title_delay"
+            android:summary="@string/summary_delay"
             android:defaultValue="0" />
 
         <!--<com.example.chessclock.NumberPickerPreference-->
@@ -145,16 +145,4 @@
             <!--android:defaultValue="0" />-->
 
     </PreferenceCategory>
-
-    <!-- View Preferences (TODO) -->
-    <PreferenceCategory
-        android:title="View">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="nosirve"
-            android:summary="Para ver como se veia la segunda categoria"
-            android:title="No hace nada" />
-    </PreferenceCategory>
-
-
 </PreferenceScreen>

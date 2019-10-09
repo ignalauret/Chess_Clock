@@ -10,6 +10,7 @@ import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
+
 import static com.example.chessclock.Constants.*;
 
 
@@ -28,6 +29,8 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         bindPreferences(findPreference(STANDARD_GAME_MODE_KEY));
         bindPreferences(findPreference(WHITE_GAME_MODE_KEY));
         bindPreferences(findPreference(BLACK_GAME_MODE_KEY));
+
+        setDefaults();
     }
 
 
@@ -59,6 +62,15 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         } else {
             super.onDisplayPreferenceDialog(preference);
         }
+    }
+
+    private void setDefaults() {
+        changeDisplay("");
+        ListPreference whiteGameMode = (ListPreference) findPreference(WHITE_GAME_MODE_KEY);
+        ListPreference blackGameMode = (ListPreference) findPreference(BLACK_GAME_MODE_KEY);
+
+        if(whiteGameMode.getValue() == null) whiteGameMode.setValueIndex(4);
+        if(blackGameMode.getValue() == null) blackGameMode.setValueIndex(4);
     }
 
 
@@ -149,6 +161,14 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         mStartingTime.setVisible(st);
         mDelay.setVisible(d);
         mIncrement.setVisible(i);
+        PreferenceCategory mWhiteTimeCategory =
+                (PreferenceCategory) findPreference(WHITE_TIME_CATEGORY_KEY);
+        PreferenceCategory mBlackTimeCategory =
+                (PreferenceCategory) findPreference(BLACK_TIME_CATEGORY_KEY);
+        mWhiteTimeCategory.setVisible(false);
+        mBlackTimeCategory.setVisible(false);
+        mWhiteTimeCategory.setVisible(true);
+        mBlackTimeCategory.setVisible(true);
     }
 
     private void showBlackPrefs(boolean pre, boolean st, boolean d, boolean i) {
@@ -162,6 +182,14 @@ public class MainSettingsFragment extends PreferenceFragmentCompat {
         mStartingTime.setVisible(st);
         mDelay.setVisible(d);
         mIncrement.setVisible(i);
+        PreferenceCategory mWhiteTimeCategory =
+                (PreferenceCategory) findPreference(WHITE_TIME_CATEGORY_KEY);
+        PreferenceCategory mBlackTimeCategory =
+                (PreferenceCategory) findPreference(BLACK_TIME_CATEGORY_KEY);
+        mWhiteTimeCategory.setVisible(false);
+        mBlackTimeCategory.setVisible(false);
+        mWhiteTimeCategory.setVisible(true);
+        mBlackTimeCategory.setVisible(true);
     }
 
 
